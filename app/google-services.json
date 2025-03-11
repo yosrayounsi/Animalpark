@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "16630332221",
+    "firebase_url": "https://fir-b8ef3-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "fir-b8ef3",
+    "storage_bucket": "fir-b8ef3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:16630332221:android:7e7ac534bfdea2da51e354",
+        "android_client_info": {
+          "package_name": "com.example.animalpark"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4PnazsRqq3BXt84tMLa2lfeeXyn1Ttxg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:16630332221:android:dec330f2514620a451e354",
+        "android_client_info": {
+          "package_name": "fr.isen.younsiyosra.animalpark"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4PnazsRqq3BXt84tMLa2lfeeXyn1Ttxg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

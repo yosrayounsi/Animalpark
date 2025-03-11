@@ -4,44 +4,41 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
+import androidx.navigation.compose.*
+import com.google.firebase.auth.FirebaseAuth
+import fr.isen.younsiyosra.animalpark.screens.LoginScreen
+import fr.isen.younsiyosra.animalpark.screens.ProfileScreen
+import fr.isen.younsiyosra.animalpark.screens.RegistrationScreen
 import fr.isen.younsiyosra.animalpark.ui.theme.AnimalparkTheme
 
 class MainActivity : ComponentActivity() {
+
+    private lateinit var auth: FirebaseAuth
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        // Initialize Firebase Auth
+        auth = FirebaseAuth.getInstance()
+
         setContent {
             AnimalparkTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                val navController = rememberNavController()
+
+                NavHost(navController = navController, startDestination = "login") {
+                    composable("login") {
+                        LoginScreen(auth = auth, navController = navController)
+                    }
+                    composable("profile") {
+                        ProfileScreen(auth = auth, navController = navController)
+                    }
+                    composable("register") {
+                        RegistrationScreen(auth = auth, navController = navController)
+                    }
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    AnimalparkTheme {
-        Greeting("Android")
     }
 }
