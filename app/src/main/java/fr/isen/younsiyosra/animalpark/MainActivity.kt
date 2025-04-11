@@ -20,15 +20,16 @@ import com.google.firebase.auth.FirebaseAuth
 import fr.isen.younsiyosra.animalpark.screens.*
 import fr.isen.younsiyosra.animalpark.ui.theme.AnimalparkTheme
 
-
-// Screens pour l'admin
+// -------------------------
+// Admin Screens
 sealed class AdminScreen(val route: String, val title: String, val icon: ImageVector) {
     object Enclosures : AdminScreen("enclosures", "Enclos", Icons.Default.Home)
     object Feed : AdminScreen("feed", "Repas", Icons.Default.ThumbUp)
     object Feeds : AdminScreen("feeds", "Planning", Icons.Default.FavoriteBorder)
 }
 
-// Screens pour l'utilisateur normal
+// -------------------------
+// User Screens
 sealed class UserScreen(val route: String, val title: String, val icon: ImageVector) {
     object Services : UserScreen("ParkServicesPage", "Services", Icons.Default.Home)
     object Map : UserScreen("Map", "Carte", Icons.Default.LocationOn)
@@ -99,7 +100,7 @@ class MainActivity : ComponentActivity() {
                         startDestination = "login",
                         modifier = Modifier.padding(innerPadding)
                     ) {
-                        // Auth
+                        // Auth Screens
                         composable("login") {
                             showBottomBar = false
                             LoginScreen(auth = auth, navController = navController)
@@ -109,7 +110,7 @@ class MainActivity : ComponentActivity() {
                             RegistrationScreen(auth = auth, navController = navController)
                         }
 
-                        // ADMIN Screens
+                        // Admin Screens
                         composable("enclosures") {
                             showBottomBar = true
                             EnclosuresScreen()
@@ -123,7 +124,7 @@ class MainActivity : ComponentActivity() {
                             FeedingScheduleListScreen()
                         }
 
-                        // USER Screens
+                        // User Screens
                         composable("ParkServicesPage") {
                             showBottomBar = true
                             ParkServicesScreen()
@@ -131,7 +132,7 @@ class MainActivity : ComponentActivity() {
                         composable("Map") {
                             showBottomBar = true
                             val context = LocalContext.current
-                            AndroidView(factory = { Map(context) })
+                            AndroidView(factory = { Map(context, null) }) // ✅ Corrigé ici
                         }
                         composable("animal") {
                             showBottomBar = true

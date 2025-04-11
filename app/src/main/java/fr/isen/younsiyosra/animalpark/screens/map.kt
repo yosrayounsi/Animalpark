@@ -1,86 +1,135 @@
 package fr.isen.younsiyosra.animalpark.screens
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
+import android.graphics.*
 import android.util.AttributeSet
+import android.view.MotionEvent
 import android.view.View
 import fr.isen.younsiyosra.animalpark.R
 
-// Classe pour représenter un enclos avec une couleur, une position et un état (ouvert ou fermé)
-data class Enclosure(val name: String, val color: String, val centerX: Float, val centerY: Float, val radius: Float, val isOpen: Boolean)
+// Données pour chaque enclos
+data class Enclosure(
+    val name: String,
+    val color: String,
+    val centerX: Float,
+    val centerY: Float,
+    val radius: Float,
+    val isOpen: Boolean,
+    val imageResId: Int
+)
 
-class Map(context: Context) : View(context) {
+class Map(context: Context, attrs: AttributeSet?) : View(context, attrs) {
 
-    private val paint: Paint = Paint().apply {
-        color = Color.BLACK
-        strokeWidth = 5f
+    private val paint = Paint().apply {
+        isAntiAlias = true
         textSize = 30f
-        style = Paint.Style.FILL
+        color = Color.BLACK
     }
 
-    private val textPaint: Paint = Paint().apply {
+    private val textPaint = Paint().apply {
+        isAntiAlias = true
         color = Color.WHITE
-        textSize = 30f
+        textSize = 28f
         textAlign = Paint.Align.CENTER
     }
 
-    private lateinit var backgroundBitmap: Bitmap
-
-    // Liste des enclos avec leurs couleurs, positions, rayons et état (ouvert ou fermé)
     private val enclosures = listOf(
-        Enclosure("La Bergerie des reptiles", "#70D5C2", 300f, 300f, 150f, true),
-        Enclosure("Le Vallon des cascades", "#A4BDCC", 900f, 300f, 150f, false),
-        Enclosure("Le Belvédère", "#B5A589", 300f, 700f, 150f, true),
-        Enclosure("Le Plateau", "#E2A59D", 900f, 700f, 150f, false),
-        Enclosure("Les Clairières", "#E2CA9D", 300f, 1100f, 150f, true),
-        Enclosure("Le Bois des pins", "#C5E29D", 900f, 1100f, 150f, true)
+        Enclosure("La Bergerie des reptiles", "#70D5C2", 300f, 300f, 150f, true, R.drawable.reptile_image),
+        Enclosure("Le Vallon des cascades", "#A4BDCC", 900f, 300f, 150f, false, R.drawable.waterfall_image),
+        Enclosure("Le Belvédère", "#B5A589", 300f, 700f, 150f, true, R.drawable.belvedere_image),
+        Enclosure("Le Plateau", "#E2A59D", 900f, 700f, 150f, false, R.drawable.plateau_image),
+        Enclosure("Les Clairières", "#E2CA9D", 300f, 1100f, 150f, true, R.drawable.clairiere_image),
+        Enclosure("Le Bois des pins", "#C5E29D", 900f, 1100f, 150f, true, R.drawable.pins_image)
     )
 
-    init {
-        // Charger l'image de fond
-        backgroundBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.background_animalpark)  // Remplace par ton image
-    }
+    private var backgroundBitmap: Bitmap =
+        BitmapFactory.decodeResource(context.resources, R.drawable.background_animalpark)
+
+    private var selectedImage: Bitmap? = null
+    private var closeButtonBounds: RectF? = null
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        // Récupérer la largeur et la hauteur de la vue
-        val viewWidth = width
-        val viewHeight = height
+        val scaledBg = Bitmap.createScaledBitmap(backgroundBitmap, width, height, true)
+        canvas.drawBitmap(scaledBg, 0f, 0f, null)
 
-        // Redimensionner l'image pour qu'elle couvre toute la vue
-        val scaledBitmap = Bitmap.createScaledBitmap(backgroundBitmap, viewWidth, viewHeight, true)
+        selectedImage?.let {
+            // Affiche l'image sélectionnée
+            canvas.drawBitmap(it, width / 2f - it.width / 2f, height / 2f - it.height / 2f, null)
 
-        // Dessiner l'image de fond redimensionnée
-        canvas.drawBitmap(scaledBitmap, 0f, 0f, null)
+            // Dessine le bouton de retour
+            val buttonPaint = Paint().apply {
+                color = Color.argb(200, 0, 0, 0)
+                isAntiAlias = true
+            }
+            val buttonTextPaint = Paint().apply {
+                color = Color.WHITE
+                textSize = 36f
+                textAlign = Paint.Align.CENTER
+                isFakeBoldText = true
+            }
 
-        // Dessiner les enclos sous forme de cercles avec leurs couleurs respectives
-        drawEnclosures(canvas)
+            val buttonWidth = 300f
+            val buttonHeight = 100f
+            val buttonLeft = width / 2f - buttonWidth / 2f
+            val buttonTop = height - 200f
+            val buttonRight = buttonLeft + buttonWidth
+            val buttonBottom = buttonTop + buttonHeight
 
-        // Dessiner les noms des enclos et leur état (ouvert ou fermé)
-        drawEnclosureNames(canvas)
-    }
+            canvas.drawRoundRect(
+                RectF(buttonLeft, buttonTop, buttonRight, buttonBottom),
+                20f, 20f, buttonPaint
+            )
+            canvas.drawText("← Fermer", width / 2f, buttonTop + 65f, buttonTextPaint)
 
-    private fun drawEnclosures(canvas: Canvas) {
-        // Dessiner les enclos sous forme de cercles avec des couleurs spécifiques
-        enclosures.forEach { enclosure ->
-            val enclosurePaint = Paint().apply { color = Color.parseColor(enclosure.color) }
-            // Dessiner le cercle
-            canvas.drawCircle(enclosure.centerX, enclosure.centerY, enclosure.radius, enclosurePaint)
+            closeButtonBounds = RectF(buttonLeft, buttonTop, buttonRight, buttonBottom)
+        } ?: run {
+            // Affiche les enclos si aucune image n’est affichée
+            enclosures.forEach { enclosure ->
+                val circlePaint = Paint().apply { color = Color.parseColor(enclosure.color) }
+                canvas.drawCircle(enclosure.centerX, enclosure.centerY, enclosure.radius, circlePaint)
+                canvas.drawText(enclosure.name, enclosure.centerX, enclosure.centerY, textPaint)
+                canvas.drawText(
+                    if (enclosure.isOpen) "Ouvert" else "Fermé",
+                    enclosure.centerX,
+                    enclosure.centerY + 40f,
+                    textPaint
+                )
+            }
         }
     }
 
-    private fun drawEnclosureNames(canvas: Canvas) {
-        // Dessiner les noms des enclos et leur état
-        enclosures.forEach { enclosure ->
-            canvas.drawText(enclosure.name, enclosure.centerX, enclosure.centerY, textPaint)
-            // Afficher l'état de l'enclos (ouvert ou fermé)
-            val stateText = if (enclosure.isOpen) "Ouvert" else "Fermé"
-            canvas.drawText(stateText, enclosure.centerX, enclosure.centerY + 40f, textPaint)
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        if (event?.action == MotionEvent.ACTION_DOWN) {
+            val x = event.x
+            val y = event.y
+
+            // Si image affichée, détecter clic sur bouton "Fermer"
+            selectedImage?.let {
+                closeButtonBounds?.let { bounds ->
+                    if (bounds.contains(x, y)) {
+                        selectedImage = null
+                        closeButtonBounds = null
+                        invalidate()
+                        return true
+                    }
+                }
+            } ?: run {
+                // Sinon détecter si clic sur un enclos
+                enclosures.forEach { enclosure ->
+                    val distance = Math.hypot(
+                        (x - enclosure.centerX).toDouble(),
+                        (y - enclosure.centerY).toDouble()
+                    )
+                    if (distance < enclosure.radius) {
+                        selectedImage = BitmapFactory.decodeResource(context.resources, enclosure.imageResId)
+                        invalidate()
+                        return true
+                    }
+                }
+            }
         }
+        return super.onTouchEvent(event)
     }
 }
