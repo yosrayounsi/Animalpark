@@ -120,7 +120,12 @@ fun LoginScreen(auth: FirebaseAuth, navController: NavController) {
                                 auth.signInWithEmailAndPassword(email.text, password.text)
                                     .addOnCompleteListener { task ->
                                         if (task.isSuccessful) {
-                                            navController.navigate("Map")
+                                            // Check if the email is admin@gmail.com
+                                            if (email.text == "admin@gmail.com") {
+                                                navController.navigate("feeds")  // Redirect to 'animal' page
+                                            } else {
+                                                navController.navigate("ParkServicesPage")  // Redirect to 'enclosures' page
+                                            }
                                         } else {
                                             errorMessage = "Erreur : ${task.exception?.message}"
                                         }

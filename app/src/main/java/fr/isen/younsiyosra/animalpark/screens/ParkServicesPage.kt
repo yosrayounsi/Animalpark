@@ -1,6 +1,5 @@
 package fr.isen.younsiyosra.animalpark.screens
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,11 +13,11 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material3.CardDefaults
-import androidx.compose.ui.tooling.preview.Preview
+
 // Marking the function as using an experimental API
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ParkServicesPage() {
+fun ParkServicesPage(modifier: Modifier = Modifier) {
     val services = listOf(
         "Toilettes",
         "Points d'eau",

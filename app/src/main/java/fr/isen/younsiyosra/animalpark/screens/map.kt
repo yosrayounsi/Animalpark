@@ -42,7 +42,7 @@ class Map(context: Context) : View(context) {
 
     init {
         // Charger l'image de fond
-        backgroundBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.mapzoo)  // Remplace par ton image
+        backgroundBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.background_animalpark)  // Remplace par ton image
     }
 
     override fun onDraw(canvas: Canvas) {
